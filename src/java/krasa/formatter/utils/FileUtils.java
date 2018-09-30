@@ -1,5 +1,30 @@
 package krasa.formatter.utils;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.StdFileTypes;
@@ -8,21 +33,10 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.ReadonlyStatusHandler;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+
 import krasa.formatter.exception.FileDoesNotExistsException;
 import krasa.formatter.exception.ParsingFailedException;
 import krasa.formatter.plugin.InvalidPropertyFile;
-import org.apache.commons.io.IOUtils;
-import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * @author Vojtech Krasa
@@ -33,7 +47,7 @@ public class FileUtils {
 	public static boolean isWritable(PsiFile psiFile) {
 		return isWritable(psiFile.getVirtualFile(), psiFile.getProject());
 	}
-	      
+
 	public static boolean isWritable(@NotNull VirtualFile file, @NotNull Project project) {
 		return !ReadonlyStatusHandler.getInstance(project).ensureFilesWritable(file).hasReadonlyFiles();
 	}
@@ -46,7 +60,7 @@ public class FileUtils {
 		}
 		return false;
 	}
-	
+
 	public static boolean isWholeFile(int startOffset, int endOffset, String text) {
 		return startOffset == 0 && endOffset == text.length();
 	}
@@ -58,7 +72,7 @@ public class FileUtils {
 
 	public static boolean isCpp(PsiFile psiFile) {
 		String name = psiFile.getFileType().getName();
-		return name.equals("C++") || name.equals("C/C++") || name.equals("ObjectiveC") ; // CLion calls it ObjectiveC... wtf
+		return name.equals("C++") || name.equals("C/C++") || name.equals("ObjectiveC"); // CLion calls it ObjectiveC... wtf
 	}
 
 	public static boolean isJava(PsiFile psiFile) {
@@ -110,8 +124,7 @@ public class FileUtils {
 
 			NodeList profiles = doc.getElementsByTagName("profile");
 			if (profiles.getLength() == 0) {
-				throw new IllegalStateException(
-						"loading of profile settings failed, file does not contain any profiles");
+				throw new IllegalStateException("loading of profile settings failed, file does not contain any profiles");
 			}
 			for (int temp = 0; temp < profiles.getLength(); temp++) {
 				Node profileNode = profiles.item(temp);
@@ -122,8 +135,7 @@ public class FileUtils {
 						profileFound = true;
 						NodeList childNodes = profileElement.getElementsByTagName("setting");
 						if (childNodes.getLength() == 0) {
-							throw new IllegalStateException(
-									"loading of profile settings failed, profile has no settings elements");
+							throw new IllegalStateException("loading of profile settings failed, profile has no settings elements");
 						}
 						for (int i = 0; i < childNodes.getLength(); i++) {
 							Node item = childNodes.item(i);
@@ -150,35 +162,111 @@ public class FileUtils {
 		return properties;
 	}
 
+	public static List<String> getProfileNamesFromConfigXML(String path) throws ParsingFailedException {
+		if (isHttpPath(path)) {
+			try {
+				HttpURLConnection.setFollowRedirects(false);
+				HttpURLConnection con = (HttpURLConnection) new URL(path).openConnection();
+				con.setRequestMethod("GET");
+				if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+					try (InputStream inputStream = con.getInputStream()) {
+						return getProfilesFromStream(inputStream);
+					}
+				} else {
+					return Collections.emptyList();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return Collections.emptyList();
+			}
+		} else {
+			return getProfileNamesFromConfigXML(new File(path));
+		}
+	}
+
 	public static List<String> getProfileNamesFromConfigXML(File file) throws ParsingFailedException {
 		List<String> profileNames = new ArrayList<String>();
 		if (file.exists()) {
-			try { // load file profiles
-				// delete eclipse dependency to fix java.lang.ClassCastException:
-				// org.apache.xerces.jaxp.DocumentBuilderFactoryImpl cannot be cast to
-				// javax.xml.parsers.DocumentBuilderFactory
+			try (InputStream is = new FileInputStream(file)) {
+				profileNames.addAll(getProfilesFromStream(is));
 
-				org.w3c.dom.Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
-				doc.getDocumentElement().normalize();
-
-				NodeList nList = doc.getElementsByTagName("profile");
-				for (int temp = 0; temp < nList.getLength(); temp++) {
-					Node nNode = nList.item(temp);
-					if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-						Element eElement = (Element) nNode;
-						String name = eElement.getAttribute("name");
-						profileNames.add(name);
-					}
-				}
-			} catch (Exception e) {
-				LOG.info(e);
-				throw new ParsingFailedException(e);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-
 		} else {
 			LOG.info("not existing file");
 		}
 		return profileNames;
 	}
 
+	private static List<String> getProfilesFromStream(InputStream is) {
+		List<String> profileNames = new ArrayList<String>();
+		try { // load file profiles
+				// delete eclipse dependency to fix java.lang.ClassCastException:
+				// org.apache.xerces.jaxp.DocumentBuilderFactoryImpl cannot be cast to
+				// javax.xml.parsers.DocumentBuilderFactory
+
+			org.w3c.dom.Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
+			doc.getDocumentElement().normalize();
+
+			NodeList nList = doc.getElementsByTagName("profile");
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+				Node nNode = nList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					String name = eElement.getAttribute("name");
+					profileNames.add(name);
+				}
+			}
+		} catch (Exception e) {
+			LOG.info(e);
+			throw new ParsingFailedException(e);
+		}
+		return profileNames;
+	}
+
+	public static boolean fileExists(String path) {
+		return fileExistsHttp(path) || new File(path).exists();
+	}
+
+	private static boolean fileExistsHttp(String path) {
+		if (!isHttpPath(path)) {
+			return false;
+		}
+		try {
+			HttpURLConnection.setFollowRedirects(false);
+			HttpURLConnection con = (HttpURLConnection) new URL(path).openConnection();
+			con.setRequestMethod("HEAD");
+			return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static boolean isHttpPath(String path) {
+		return path.matches("http[s]?://.*");
+	}
+
+	public static String loadRemoteConfig(String path) {
+		try {
+			HttpURLConnection.setFollowRedirects(false);
+			HttpURLConnection con = (HttpURLConnection) new URL(path).openConnection();
+			con.setRequestMethod("GET");
+			if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+				File tempFile = File.createTempFile("c:\\temp\\intellij-eclipse-formatter", ".xml");
+				try (InputStream inputStream = con.getInputStream(); OutputStream os = new FileOutputStream(tempFile)) {
+					IOUtils.copy(inputStream, os);
+				}
+				return tempFile.getAbsolutePath();
+			} else {
+				return "";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
 }

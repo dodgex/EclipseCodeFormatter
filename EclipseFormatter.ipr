@@ -14,6 +14,19 @@
       </root>
     </artifact>
   </component>
+  <component name="CheckStyle-IDEA">
+    <option name="configuration">
+      <map>
+        <entry key="checkstyle-version" value="8.12" />
+        <entry key="copy-libs" value="true" />
+        <entry key="location-0" value="BUNDLED:(bundled):Sun Checks" />
+        <entry key="location-1" value="BUNDLED:(bundled):Google Checks" />
+        <entry key="scan-before-checkin" value="false" />
+        <entry key="scanscope" value="JavaOnly" />
+        <entry key="suppress-errors" value="false" />
+      </map>
+    </option>
+  </component>
   <component name="CompilerConfiguration">
     <wildcardResourcePatterns>
       <entry name="?*.properties" />
@@ -34,17 +47,11 @@
         <outputRelativeToContentRoot value="true" />
         <module name="DependencyHandler" />
         <module name="eclipse" />
-        <module name="eclipse44" />
         <module name="eclipse45" />
         <module name="eclipseLibs" />
         <module name="FormatterTest" />
         <module name="krasa.formattertest" />
         <module name="untitled" />
-      </profile>
-      <profile name="Annotation profile for krasa.formattertest" enabled="true">
-        <sourceOutputDir name="../FormatterTest/target/generated-sources/annotations" />
-        <sourceTestOutputDir name="../FormatterTest/target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -60,24 +67,27 @@
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
-  <component name="EclipseCodeFormatter">
-    <option name="defaultSettings" value="true" />
-    <option name="eclipseVersion" value="ECLIPSE_44" />
-    <option name="formatter" value="ECLIPSE" />
-    <option name="id" value="1462535080417" />
-    <option name="importOrderConfigFilePath" value="$PROJECT_DIR$/test/resources/eclipse.importorder" />
-    <option name="importOrdering" value="ECLIPSE_44" />
-    <option name="name" value="default" />
-    <option name="pathToConfigFileJava" value="$PROJECT_DIR$/../../../format.xml" />
-    <option name="pathToEclipse" value="C:\Users\Meo\.p2\pool" />
-    <option name="selectedJavaProfile" value="Ales" />
-    <option name="useOldEclipseJavaFormatter" value="true" />
+  <component name="EclipseCodeFormatterProjectSettings">
+    <option name="selectedGlobalProfile">
+      <Settings>
+        <option name="formatter" value="ECLIPSE" />
+        <option name="id" value="1444156060333" />
+        <option name="importOrderConfigFilePath" value="$PROJECT_DIR$/../../Eclipse/workspace-luna/androidannotations/AndroidAnnotations/eclipse.importorder" />
+        <option name="importOrderFromFile" value="true" />
+        <option name="name" value="default" />
+        <option name="pathToConfigFileJava" value="$PROJECT_DIR$/../../Eclipse/workspace-luna/androidannotations/AndroidAnnotations/eclipse-formatter.xml" />
+        <option name="selectedJavaProfile" value="AndroidAnnotations" />
+      </Settings>
+    </option>
   </component>
-  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+  <component name="Encoding">
     <file url="PROJECT" charset="UTF-8" />
   </component>
-  <component name="EntryPointsManager">
-    <entry_points version="2.0" />
+  <component name="InspectionProjectProfileManager">
+    <profile version="1.0">
+      <option name="myName" value="Project Default" />
+    </profile>
+    <version value="1.0" />
   </component>
   <component name="IntelliCalc">
     <mode value="0" />
@@ -124,6 +134,7 @@
       <set>
         <option value="$PROJECT_DIR$/support/eclipse44/pom.xml" />
         <option value="$PROJECT_DIR$/support/eclipse45/pom.xml" />
+        <option value="$PROJECT_DIR$/support/eclipseLibs44/pom.xml" />
         <option value="$PROJECT_DIR$/testProject/pom.xml" />
       </set>
     </option>
@@ -249,6 +260,18 @@
       </item>
     </group>
   </component>
+  <component name="ProjectCodeStyleConfiguration">
+    <code_scheme name="Project" version="173">
+      <XML>
+        <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
+      </XML>
+      <codeStyleSettings language="JAVA">
+        <indentOptions>
+          <option name="USE_TAB_CHARACTER" value="true" />
+        </indentOptions>
+      </codeStyleSettings>
+    </code_scheme>
+  </component>
   <component name="ProjectCodeStyleSettingsManager">
     <option name="PER_PROJECT_SETTINGS">
       <value>
@@ -269,11 +292,8 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/EclipseAdapter/EclipseAdapter.iml" filepath="$PROJECT_DIR$/EclipseAdapter/EclipseAdapter.iml" />
-      <module fileurl="file://$PROJECT_DIR$/EclipseAdapter44/EclipseAdapter44.iml" filepath="$PROJECT_DIR$/EclipseAdapter44/EclipseAdapter44.iml" />
       <module fileurl="file://$PROJECT_DIR$/EclipseAdapter/EclipseAdapter45.iml" filepath="$PROJECT_DIR$/EclipseAdapter/EclipseAdapter45.iml" />
       <module fileurl="file://$PROJECT_DIR$/EclipseFormatter.iml" filepath="$PROJECT_DIR$/EclipseFormatter.iml" />
-      <module fileurl="file://$PROJECT_DIR$/support/eclipseLibs44/eclipse44.iml" filepath="$PROJECT_DIR$/support/eclipseLibs44/eclipse44.iml" />
       <module fileurl="file://$PROJECT_DIR$/support/eclipseLibs/eclipse45.iml" filepath="$PROJECT_DIR$/support/eclipseLibs/eclipse45.iml" />
       <module fileurl="file://$PROJECT_DIR$/support/eclipseLibs/eclipseLibs.iml" filepath="$PROJECT_DIR$/support/eclipseLibs/eclipseLibs.iml" />
       <module fileurl="file://$PROJECT_DIR$/support/repackager.iml" filepath="$PROJECT_DIR$/support/repackager.iml" />
@@ -283,19 +303,8 @@
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" default="false" project-jdk-name="IntelliJ IDEA 16" project-jdk-type="IDEA JDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" default="false" project-jdk-name="IntelliJ IDEA IU-182.4505.22" project-jdk-type="IDEA JDK">
     <output url="file://$PROJECT_DIR$/out" />
-  </component>
-  <component name="PublishConfigData">
-    <serverData>
-      <paths name="aa">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-    </serverData>
   </component>
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
@@ -355,11 +364,9 @@
     <library name="test">
       <CLASSES>
         <root url="file://$PROJECT_DIR$/lib/test" />
-        <root url="file://$PROJECT_DIR$/lib/test" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="file://$PROJECT_DIR$/lib/test" />
         <root url="file://$PROJECT_DIR$/lib/test" />
         <root url="jar://$PROJECT_DIR$/../../unitils-easymock-3.3-sources.jar!/" />
       </SOURCES>

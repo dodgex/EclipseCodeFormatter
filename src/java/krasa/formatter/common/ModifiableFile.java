@@ -3,6 +3,7 @@ package krasa.formatter.common;
 import java.io.File;
 
 import krasa.formatter.exception.FileDoesNotExistsException;
+import krasa.formatter.utils.FileUtils;
 
 /**
  * @author Vojtech Krasa
@@ -10,7 +11,15 @@ import krasa.formatter.exception.FileDoesNotExistsException;
 public class ModifiableFile extends File {
 
 	public ModifiableFile(String pathToConfigFileJava) {
-		super(pathToConfigFileJava);
+		super(createFile(pathToConfigFileJava));
+	}
+
+	private static String createFile(String pathToConfigFileJava) {
+		if (FileUtils.isHttpPath(pathToConfigFileJava)) {
+			return FileUtils.loadRemoteConfig(pathToConfigFileJava);
+		} else {
+			return pathToConfigFileJava;
+		}
 	}
 
 	public boolean wasChanged(Monitor lastState) {
