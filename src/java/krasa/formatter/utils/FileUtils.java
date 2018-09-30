@@ -256,7 +256,7 @@ public class FileUtils {
 			HttpURLConnection con = (HttpURLConnection) new URL(path).openConnection();
 			con.setRequestMethod("GET");
 			if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-				File tempFile = File.createTempFile("c:\\temp\\intellij-eclipse-formatter", ".xml");
+				File tempFile = File.createTempFile("intellij-eclipse-formatter", ".xml");
 				try (InputStream inputStream = con.getInputStream(); OutputStream os = new FileOutputStream(tempFile)) {
 					IOUtils.copy(inputStream, os);
 				}
