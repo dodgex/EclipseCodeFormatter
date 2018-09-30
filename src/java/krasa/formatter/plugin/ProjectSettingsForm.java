@@ -13,7 +13,6 @@ import static com.intellij.openapi.fileChooser.FileChooserDescriptorFactory.crea
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -791,7 +790,7 @@ public class ProjectSettingsForm {
 			if (StringUtils.isBlank(pathToEclipsePreferenceFileJS.getText())) {
 				throw new ConfigurationException("Path to JS config file is not valid");
 			}
-			if (!new File(pathToEclipsePreferenceFileJS.getText()).exists()) {
+			if (!FileUtils.fileExists(pathToEclipsePreferenceFileJS.getText())) {
 				throw new ConfigurationException("Path to JS config file is not valid - file does not exist");
 			}
 		}
@@ -799,7 +798,7 @@ public class ProjectSettingsForm {
 			if (StringUtils.isBlank(pathToImportOrderPreferenceFile.getText())) {
 				throw new ConfigurationException("Path to Import Order file is not valid");
 			}
-			if (!new File(pathToImportOrderPreferenceFile.getText()).exists()) {
+			if (!FileUtils.fileExists(pathToImportOrderPreferenceFile.getText())) {
 				throw new ConfigurationException("Path to Import Order file is not valid - file does not exist");
 			}
 		}
@@ -807,7 +806,7 @@ public class ProjectSettingsForm {
 			if (StringUtils.isBlank(pathToCustomEclipse.getText())) {
 				throw new ConfigurationException("Path to custom Eclipse folder is not valid");
 			}
-			if (!new File(pathToCustomEclipse.getText()).exists()) {
+			if (!FileUtils.fileExists(pathToCustomEclipse.getText())) {
 				throw new ConfigurationException("Path to custom Eclipse folder is not valid - folder does not exist");
 			}
 		}
